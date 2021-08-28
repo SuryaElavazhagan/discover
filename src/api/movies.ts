@@ -15,7 +15,9 @@ export interface IGenre {
   name: string;
 }
 
-export interface IDiscover {
+export interface IDiscoverMovies {
+  type: string;
+  page: number;
   rating: [number, number];
   year: [number, number];
   genre: number[];
@@ -59,12 +61,54 @@ async function getMovies(type: string, page: number): Promise<IPaginatedResponse
   };
 }
 
-async function discoverMovie() {
+async function discoverMovie(filters: IDiscoverMovies) {
+  const {
+    year,
+    type,
+    rating,
+    page,
+    genre
+  } = filters;
+  let sortBy = '';
+  switch (type) {
+    case 'popular':
+      sortBy = 'popularity.desc';
+      break;
+    case 'trend':
+      sortBy = 'vote_count.desc';
+      break;
+    case 'new':
+      sortBy = 'release_date.desc';
+      break;
+    case 'top':
+      sortBy = 'vote_average.desc';
+      break;
+  }
+  let releaseDateGte = dayjs(`1-1-${year[0]}`).startOf('year').format('YYYY-MM-DD');
+  let releaseDateLte = dayjs(`1-1-${year[1]}`).endOf('year').format('YYYY-MM-DD');
+  const { data } = await tmdb.get('discover/movie', {
+    params: {
+      sort_by: sortBy,
+      'release_date.gte': releaseDateGte,
+      'release_date.lte': releaseDateLte,
+      'vote_average.gte': rating[0],
+      'vote_average.lte': rating[1],
+      page,
+      with_genres: genre.join(',')
+    }
+  });
+  const movies = data.results.map(parseMovie);
 
+  return {
+    totalPages: data.total_pages,
+    totalResults: data.total_results,
+    page: data.page,
+    items: movies
+  };
 }
 
 async function getMovieGenres() {
-  const { data } = await tmdb.get('/genre/movie/list');
+  const { data } = await tmdb.get('genre/movie/list');
   return (data.genres as IGenre[]).map((genre) => ({
     label: genre.name,
     value: genre.id
@@ -72,6 +116,7 @@ async function getMovieGenres() {
 }
 
 export {
+  discoverMovie,
   getMovies,
   getMovieGenres
 };

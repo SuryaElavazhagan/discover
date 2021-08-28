@@ -1,14 +1,26 @@
 import clsx from 'clsx';
+import { ChangeEvent } from 'react';
+import { useDispatch } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
 import SearchIcon from '../assets/search.svg';
 import { NAVBAR_ITEMS } from '../constants/routes';
 
 function Header() {
   const location = useLocation();
+  const dispatch = useDispatch();
+
+  function handleSearch(e: ChangeEvent<HTMLInputElement>) {
+    const query = e.target.value.trim();
+    if (query.length > 0) {
+
+    }
+  }
 
   return (
     <header className="flex justify-between items-center">
-      <p className="text-2xl text-white">Discover</p>
+      <Link to="/">
+        <p className="text-2xl text-white">Discover</p>
+      </Link>
       <nav>
         <ul className="list-none flex">
           {
@@ -30,8 +42,15 @@ function Header() {
           }
         </ul>
       </nav>
-      <div>
+      <div className="flex">
         <img src={SearchIcon} alt="Search Icon" />
+        <input
+          type="text"
+          name="search"
+          placeholder="SEARCH"
+          className="font-bold uppercase border-0 bg-gray-800 text-blue-500 outline-none select-none placeholder-blue-500"
+          onChange={handleSearch}
+        />
       </div>
     </header>
   );

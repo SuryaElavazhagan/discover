@@ -43,6 +43,10 @@ export const filterSlice = createSlice<IFilterState, IFilterReducers>({
   reducers: {
     changeType: (state, action) => {
       state.type = action.payload;
+      state.search = '';
+      state.genre = [];
+      state.year = [1900, (new Date()).getFullYear()];
+      state.rating = [0, 5];
     },
     changeGenre: (state, action) => {
       state.genre = action.payload;

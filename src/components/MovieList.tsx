@@ -5,15 +5,19 @@ import Loader from "react-loader-spinner";
 import ReactPaginate from 'react-paginate';
 
 import { IPaginatedResponse } from "../api";
-import { getMovies, IMovie } from "../api/movies";
+import { discoverMovie, getMovies, IMovie } from "../api/movies";
 import Movie from "./Movie";
 import { useSelector } from "react-redux";
 import { IRootState } from "../store";
-import { getShows } from "../api/shows";
+import { discoverShow, getShows } from "../api/shows";
+import { isDefaultValue } from "../constants/filters";
 
 function MovieList() {
   const location = useLocation();
   const type = useSelector((state: IRootState) => state.filter.type);
+  const genre = useSelector((state: IRootState) => state.filter.genre);
+  const year = useSelector((state: IRootState) => state.filter.year);
+  const rating = useSelector((state: IRootState) => state.filter.rating);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [page, setPage] = useState(0);
@@ -25,22 +29,44 @@ function MovieList() {
   });
 
   useEffect(() => {
-    setPage(0);
-  }, [location.pathname, type]);
+    fetchMovies();
+  }, [location.pathname, type, page, genre, year, rating]);
 
   useEffect(() => {
-    fetchMovies();
-  }, [page]);
-
+    if (page !== 0) {
+      setPage(0);
+    }
+  }, [location.pathname, type, genre, year, rating]);
 
   async function fetchMovies() {
     try {
+      setError('');
       setLoading(true);
       const kind = location.pathname.substring(1);
       if (type === 'movie') {
-        setMovies(await getMovies(kind, page + 1));
+        if (!isDefaultValue(genre, year, rating)) {
+          setMovies(await discoverMovie({
+            page: page + 1,
+            type: kind,
+            genre,
+            year,
+            rating
+          }));
+        } else {
+          setMovies(await getMovies(kind, page + 1));
+        }
       } else {
-        setMovies(await getShows(kind, page + 1));
+        if (!isDefaultValue(genre, year, rating)) {
+          setMovies(await discoverShow({
+            page: page + 1,
+            type: kind,
+            genre,
+            year,
+            rating
+          }));
+        } else {
+          setMovies(await getShows(kind, page + 1));
+        }
       }
     } catch (e) {
       setError('Something went wrong! Please try again later.');
@@ -62,8 +88,14 @@ function MovieList() {
       );
     } else if (error.length) {
       return (
-        <div className="w-full h-full flex items-center justify-center text-white">
+        <div className="w-full h-full flex flex-col items-center justify-center text-white">
           { error }
+          <button
+            className="px-8 py4 rounded-xl bg-white"
+            onClick={fetchMovies}
+          >
+            Retry
+          </button>
         </div>
       );
     } else if (movies.totalResults === 0) {

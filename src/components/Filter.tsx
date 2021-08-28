@@ -5,13 +5,21 @@ import Rate from 'rc-rate';
 import { TYPES, YEAR } from '../constants/filters';
 import { changeGenre, changeRating, changeType, changeYear, IRootState } from '../store';
 import { useState } from 'react';
+import { useEffect } from 'react';
 
 function Filter() {
   const dispath = useDispatch();
   const movieGenres = useSelector((state: IRootState) => state.filter.movieGenres);
+  const tvGenres = useSelector((state: IRootState) => state.filter.tvGenres);
+  const type = useSelector((state: IRootState) => state.filter.type);
   const year = useSelector((state: IRootState) => state.filter.year);
+  const [genre, setGenre] = useState<OptionsType<OptionTypeBase>>([]);
   const [startYear, setStartYear] = useState(YEAR[0]);
   const [endYear, setEndYear] = useState(YEAR[YEAR.length - 1]);
+
+  useEffect(() => {
+    setGenre([]);
+  }, [type]);
 
   function handleTypeChange(value: OptionTypeBase | null) {
     if (value !== null) {
@@ -21,6 +29,7 @@ function Filter() {
 
   function handleGenreChange(values: OptionsType<OptionTypeBase>) {
     dispath(changeGenre(values.map(value => value.value)));
+    setGenre(values);
   }
 
   function handleRatingChange(value: number) {
@@ -54,7 +63,8 @@ function Filter() {
         <p className="my-2 text-gray-500">Genre</p>
         <Select
           isMulti
-          options={movieGenres}
+          value={genre}
+          options={type === 'movie' ? movieGenres : tvGenres}
           onChange={handleGenreChange}
         />
         <p className="my-2 text-gray-500">Year</p>
@@ -76,6 +86,7 @@ function Filter() {
         <p className="my-2 text-gray-500">Ratings</p>
         <Rate
           allowHalf
+          allowClear
           onChange={handleRatingChange}
         />
         <span className="mx-1 text-white">&amp; up</span>
