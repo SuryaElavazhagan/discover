@@ -7,9 +7,13 @@ import ReactPaginate from 'react-paginate';
 import { IPaginatedResponse } from "../api";
 import { getMovies, IMovie } from "../api/movies";
 import Movie from "./Movie";
+import { useSelector } from "react-redux";
+import { IRootState } from "../store";
+import { getShows } from "../api/shows";
 
 function MovieList() {
   const location = useLocation();
+  const type = useSelector((state: IRootState) => state.filter.type);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [page, setPage] = useState(0);
@@ -21,15 +25,23 @@ function MovieList() {
   });
 
   useEffect(() => {
+    setPage(0);
+  }, [location.pathname, type]);
+
+  useEffect(() => {
     fetchMovies();
-  }, [location.pathname, page]);
+  }, [page]);
 
 
   async function fetchMovies() {
     try {
       setLoading(true);
-      const type = location.pathname.substring(1);
-      // setMovies(await getMovies(type, page + 1));
+      const kind = location.pathname.substring(1);
+      if (type === 'movie') {
+        setMovies(await getMovies(kind, page + 1));
+      } else {
+        setMovies(await getShows(kind, page + 1));
+      }
     } catch (e) {
       setError('Something went wrong! Please try again later.');
     } finally {
