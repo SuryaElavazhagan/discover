@@ -46,7 +46,7 @@ async function getMovies(type: string, page: number): Promise<IPaginatedResponse
       url = 'trending/movie/week';
       break;
     case 'new':
-      url = 'movie/latest';
+      url = 'movie/now_playing';
       break;
     case 'top':
       url = 'movie/top_rated';
