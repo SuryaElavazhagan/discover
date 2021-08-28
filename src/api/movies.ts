@@ -1,7 +1,6 @@
 import { IPaginatedResponse, tmdb } from ".";
 import { TMDB } from "../constants/tmdb";
 import dayjs from 'dayjs';
-import { NAVBAR_ITEMS } from "../constants/routes";
 
 export interface IMovie {
   poster: string;
@@ -10,8 +9,6 @@ export interface IMovie {
   rating: number;
   year: number;
 }
-
-type Keys<T> = keyof T;
 
 function parseMovie(movie: Record<string, any>): IMovie {
   const year = dayjs(movie.release_date).year();

@@ -31,7 +31,7 @@ function Header() {
         </ul>
       </nav>
       <div>
-        <img src={SearchIcon} />
+        <img src={SearchIcon} alt="Search Icon" />
       </div>
     </header>
   );
