@@ -18,6 +18,8 @@ function MovieList() {
   const genre = useSelector((state: IRootState) => state.filter.genre);
   const year = useSelector((state: IRootState) => state.filter.year);
   const rating = useSelector((state: IRootState) => state.filter.rating);
+  const movieGenres = useSelector((state: IRootState) => state.filter.movieGenres);
+  const tvGenres = useSelector((state: IRootState) => state.filter.tvGenres);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [page, setPage] = useState(0);
@@ -37,6 +39,21 @@ function MovieList() {
       setPage(0);
     }
   }, [location.pathname, type, genre, year, rating]);
+
+  function getGenre(genre: number | undefined) {
+    if (genre != undefined) {
+      let value;
+      if (type === 'movie') {
+        value = movieGenres.find((mGenre) => mGenre.value === genre);
+      } else {
+        value = tvGenres.find((sGenre) => sGenre.value === genre);
+      }
+
+      return value?.label ?? '';
+    }
+
+    return '';
+  }
 
   async function fetchMovies() {
     try {
@@ -108,7 +125,7 @@ function MovieList() {
       return (
         <div className="w-full h-full overflow-scroll">
           <div className="grid grid-cols-3 gap-4">
-            {movies.items.map((movie) => <Movie key={movie.id} movie={movie} />)}
+            {movies.items.map((movie) => <Movie key={movie.id} movie={movie} genre={getGenre(movie.genre[0])} />)}
           </div>
           <div className="my-8 flex justify-center" id="react-paginate">
             <ReactPaginate

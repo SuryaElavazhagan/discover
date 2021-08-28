@@ -8,6 +8,7 @@ export interface IMovie {
   title: string;
   rating: number;
   year: number;
+  genre: number[];
 }
 
 export interface IGenre {
@@ -30,7 +31,8 @@ function parseMovie(movie: Record<string, any>): IMovie {
     id: movie.id,
     title: movie.title,
     rating: movie.vote_average,
-    year
+    year,
+    genre: movie.genre_ids
   };
 }
 

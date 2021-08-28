@@ -10,7 +10,8 @@ function parseShow(show: Record<string, any>): IMovie {
     id: show.id,
     title: show.name,
     rating: show.vote_average,
-    year
+    year,
+    genre: show.genre_ids
   };
 }
 

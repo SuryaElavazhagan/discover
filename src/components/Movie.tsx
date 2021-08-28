@@ -2,9 +2,10 @@ import { IMovie } from "../api/movies";
 
 interface IMovieProps {
   movie: IMovie;
+  genre: string;
 }
 
-function Movie({ movie }: IMovieProps) {
+function Movie({ movie, genre }: IMovieProps) {
   return (
     <div className="flex flex-col items-center">
       <img
@@ -15,7 +16,7 @@ function Movie({ movie }: IMovieProps) {
       <p className="text-blue-500 font-bold py-1">
         { movie.title }
       </p>
-      <p className="text-gray-500 font-light text-sm">{ movie.year }</p>
+      <p className="text-gray-500 font-light text-sm">{genre}, { movie.year }</p>
     </div>
   );
 }
