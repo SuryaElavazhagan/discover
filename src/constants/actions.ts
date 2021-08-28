@@ -1,0 +1,10 @@
+const ACTIONS: Record<string, string> = {
+  CHANGE_GENRE: 'CHANGE_GENRE',
+  CHANGE_TYPE: 'CHANGE_TYPE',
+  CHANGE_YEAR: 'CHANGE_YEAR',
+  CHANGE_RATING: 'CHANGE_RATING'
+};
+
+export {
+  ACTIONS
+};
