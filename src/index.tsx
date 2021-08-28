@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 // React loader css
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
+// React star css
+import 'rc-rate/assets/index.css';
 
 import './styles/index.css';
 import './styles/pagination.css';

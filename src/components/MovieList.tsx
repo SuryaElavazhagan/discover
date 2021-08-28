@@ -29,7 +29,7 @@ function MovieList() {
     try {
       setLoading(true);
       const type = location.pathname.substring(1);
-      setMovies(await getMovies(type, page + 1));
+      // setMovies(await getMovies(type, page + 1));
     } catch (e) {
       setError('Something went wrong! Please try again later.');
     } finally {
@@ -50,8 +50,14 @@ function MovieList() {
       );
     } else if (error.length) {
       return (
-        <div className="w-full h-full flex items-center justify-center">
+        <div className="w-full h-full flex items-center justify-center text-white">
           { error }
+        </div>
+      );
+    } else if (movies.totalResults === 0) {
+      return (
+        <div className="w-full h-full flex items-center justify-center text-white">
+          No results found.
         </div>
       );
     } else {

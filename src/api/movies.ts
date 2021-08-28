@@ -10,6 +10,17 @@ export interface IMovie {
   year: number;
 }
 
+export interface IGenre {
+  id: number;
+  name: string;
+}
+
+export interface IDiscover {
+  rating: [number, number];
+  year: [number, number];
+  genre: number[];
+}
+
 function parseMovie(movie: Record<string, any>): IMovie {
   const year = dayjs(movie.release_date).year();
   return {
@@ -18,18 +29,6 @@ function parseMovie(movie: Record<string, any>): IMovie {
     title: movie.title,
     rating: movie.vote_average,
     year
-  };
-}
-
-async function getPopularMovies(page: number): Promise<IPaginatedResponse<IMovie>> {
-  const { data } = await tmdb.get('movie/top_rated', { params: { page } });
-  const movies = data.results.map(parseMovie);
-
-  return {
-    totalPages: data.total_pages,
-    totalResults: data.total_results,
-    page: data.page,
-    items: movies
   };
 }
 
@@ -60,7 +59,19 @@ async function getMovies(type: string, page: number): Promise<IPaginatedResponse
   };
 }
 
+async function discoverMovie() {
+
+}
+
+async function getMovieGenres() {
+  const { data } = await tmdb.get('/genre/movie/list');
+  return (data.genres as IGenre[]).map((genre) => ({
+    label: genre.name,
+    value: genre.id
+  }));
+}
+
 export {
-  getPopularMovies,
-  getMovies
+  getMovies,
+  getMovieGenres
 };
