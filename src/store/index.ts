@@ -53,6 +53,9 @@ export const filterSlice = createSlice<IFilterState, IFilterReducers>({
     },
     changeSearch: (state, action) => {
       state.search = action.payload;
+      state.genre = [];
+      state.year = [1900, (new Date()).getFullYear()];
+      state.rating = [0, 5];
     },
     changeYear: (state, action) => {
       state.year = action.payload;

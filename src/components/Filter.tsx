@@ -1,11 +1,10 @@
+import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Select, { OptionsType, OptionTypeBase } from 'react-select';
 import Rate from 'rc-rate';
 
 import { TYPES, YEAR } from '../constants/filters';
 import { changeGenre, changeRating, changeType, changeYear, IRootState } from '../store';
-import { useState } from 'react';
-import { useEffect } from 'react';
 
 function Filter() {
   const dispath = useDispatch();
@@ -13,13 +12,17 @@ function Filter() {
   const tvGenres = useSelector((state: IRootState) => state.filter.tvGenres);
   const type = useSelector((state: IRootState) => state.filter.type);
   const year = useSelector((state: IRootState) => state.filter.year);
+  const search = useSelector((state: IRootState) => state.filter.search);
+  const rating = useSelector((state: IRootState) => state.filter.rating);
   const [genre, setGenre] = useState<OptionsType<OptionTypeBase>>([]);
   const [startYear, setStartYear] = useState(YEAR[0]);
   const [endYear, setEndYear] = useState(YEAR[YEAR.length - 1]);
 
   useEffect(() => {
     setGenre([]);
-  }, [type]);
+    setStartYear(YEAR[0]);
+    setEndYear(YEAR[YEAR.length - 1]);
+  }, [type, search]);
 
   function handleTypeChange(value: OptionTypeBase | null) {
     if (value !== null) {
@@ -87,6 +90,7 @@ function Filter() {
         <Rate
           allowHalf
           allowClear
+          value={rating[0]}
           onChange={handleRatingChange}
         />
         <span className="mx-1 text-white">&amp; up</span>

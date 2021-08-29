@@ -1,9 +1,11 @@
 import clsx from 'clsx';
+import debounce from 'lodash.debounce';
 import { ChangeEvent } from 'react';
 import { useDispatch } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
 import SearchIcon from '../assets/search.svg';
 import { NAVBAR_ITEMS } from '../constants/routes';
+import { changeSearch } from '../store';
 
 function Header() {
   const location = useLocation();
@@ -11,10 +13,10 @@ function Header() {
 
   function handleSearch(e: ChangeEvent<HTMLInputElement>) {
     const query = e.target.value.trim();
-    if (query.length > 0) {
-
-    }
+    dispatch(changeSearch(query));
   }
+
+  const debouncedSearch = debounce(handleSearch, 1500);
 
   return (
     <header className="flex justify-between items-center">
@@ -49,7 +51,7 @@ function Header() {
           name="search"
           placeholder="SEARCH"
           className="font-bold uppercase border-0 bg-gray-800 text-blue-500 outline-none select-none placeholder-blue-500"
-          onChange={handleSearch}
+          onChange={debouncedSearch}
         />
       </div>
     </header>

@@ -63,7 +63,7 @@ async function getMovies(type: string, page: number): Promise<IPaginatedResponse
   };
 }
 
-async function discoverMovie(filters: IDiscoverMovies) {
+async function discoverMovie(filters: IDiscoverMovies): Promise<IPaginatedResponse<IMovie>> {
   const {
     year,
     type,
@@ -109,6 +109,23 @@ async function discoverMovie(filters: IDiscoverMovies) {
   };
 }
 
+async function searchMovie(search: string, page: number): Promise<IPaginatedResponse<IMovie>> {
+  const { data } = await tmdb.get('search/movie', {
+    params: {
+      query: search,
+      page
+    }
+  });
+  const movies = data.results.map(parseMovie);
+
+  return {
+    totalPages: data.total_pages,
+    totalResults: data.total_results,
+    page: data.page,
+    items: movies
+  };
+}
+
 async function getMovieGenres() {
   const { data } = await tmdb.get('genre/movie/list');
   return (data.genres as IGenre[]).map((genre) => ({
@@ -120,5 +137,6 @@ async function getMovieGenres() {
 export {
   discoverMovie,
   getMovies,
+  searchMovie,
   getMovieGenres
 };

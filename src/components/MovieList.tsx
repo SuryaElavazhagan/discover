@@ -5,11 +5,11 @@ import Loader from "react-loader-spinner";
 import ReactPaginate from 'react-paginate';
 
 import { IPaginatedResponse } from "../api";
-import { discoverMovie, getMovies, IMovie } from "../api/movies";
+import { discoverMovie, getMovies, IMovie, searchMovie } from "../api/movies";
 import Movie from "./Movie";
 import { useSelector } from "react-redux";
 import { IRootState } from "../store";
-import { discoverShow, getShows } from "../api/shows";
+import { discoverShow, getShows, searchShow } from "../api/shows";
 import { isDefaultValue } from "../constants/filters";
 
 /**
@@ -18,7 +18,7 @@ import { isDefaultValue } from "../constants/filters";
  * react libraries (react, router, redux).
  * 
  * All the items referred from store can be converted to
- * props i.e., type, genre, year, rating, movieGenres,
+ * props i.e., type, genre, search, year, rating, movieGenres,
  * tvGenres
  */
 
@@ -28,6 +28,7 @@ function MovieList() {
   const genre = useSelector((state: IRootState) => state.filter.genre);
   const year = useSelector((state: IRootState) => state.filter.year);
   const rating = useSelector((state: IRootState) => state.filter.rating);
+  const search = useSelector((state: IRootState) => state.filter.search);
   const movieGenres = useSelector((state: IRootState) => state.filter.movieGenres);
   const tvGenres = useSelector((state: IRootState) => state.filter.tvGenres);
   const [loading, setLoading] = useState(false);
@@ -41,14 +42,14 @@ function MovieList() {
   });
 
   useEffect(() => {
-    fetchMovies();
-  }, [location.pathname, type, page, genre, year, rating]);
+    fetchItems();
+  }, [location.pathname, type, page, genre, year, rating, search]);
 
   useEffect(() => {
     if (page !== 0) {
       setPage(0);
     }
-  }, [location.pathname, type, genre, year, rating]);
+  }, [location.pathname, type, genre, year, rating, search]);
 
   function getGenre(genre: number | undefined) {
     if (genre != undefined) {
@@ -66,34 +67,51 @@ function MovieList() {
   }
 
   async function fetchMovies() {
+    if (search.length > 0) {
+      setMovies(await searchMovie(search, page + 1));
+    } else {
+      const kind = location.pathname.substring(1);
+      if (!isDefaultValue(genre, year, rating)) {
+        setMovies(await discoverMovie({
+          page: page + 1,
+          type: kind,
+          genre,
+          year,
+          rating
+        }));
+      } else {
+        setMovies(await getMovies(kind, page + 1));
+      }
+    }
+  }
+
+  async function fetchShows() {
+    if (search.length > 0) {
+      setMovies(await searchShow(search, page + 1));
+    } else {
+      const kind = location.pathname.substring(1);
+      if (!isDefaultValue(genre, year, rating)) {
+        setMovies(await discoverShow({
+          page: page + 1,
+          type: kind,
+          genre,
+          year,
+          rating
+        }));
+      } else {
+        setMovies(await getShows(kind, page + 1));
+      }
+    }
+  }
+
+  async function fetchItems() {
     try {
       setError('');
       setLoading(true);
-      const kind = location.pathname.substring(1);
       if (type === 'movie') {
-        if (!isDefaultValue(genre, year, rating)) {
-          setMovies(await discoverMovie({
-            page: page + 1,
-            type: kind,
-            genre,
-            year,
-            rating
-          }));
-        } else {
-          setMovies(await getMovies(kind, page + 1));
-        }
+        await fetchMovies();
       } else {
-        if (!isDefaultValue(genre, year, rating)) {
-          setMovies(await discoverShow({
-            page: page + 1,
-            type: kind,
-            genre,
-            year,
-            rating
-          }));
-        } else {
-          setMovies(await getShows(kind, page + 1));
-        }
+        await fetchShows();
       }
     } catch (e) {
       setError('Something went wrong! Please try again later.');
@@ -119,7 +137,7 @@ function MovieList() {
           { error }
           <button
             className="px-8 py4 rounded-xl bg-white text-gray-900"
-            onClick={fetchMovies}
+            onClick={fetchItems}
           >
             Retry
           </button>

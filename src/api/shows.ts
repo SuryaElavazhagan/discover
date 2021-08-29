@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import { TMDB } from '../constants/tmdb';
-import { tmdb } from './index';
+import { IPaginatedResponse, tmdb } from './index';
 import { IDiscoverMovies, IGenre, IMovie } from './movies';
 
 function parseShow(show: Record<string, any>): IMovie {
@@ -15,7 +15,7 @@ function parseShow(show: Record<string, any>): IMovie {
   };
 }
 
-async function getShows(type: string, page: number) {
+async function getShows(type: string, page: number): Promise<IPaginatedResponse<IMovie>> {
   let url = '';
   switch (type) {
     case 'popular':
@@ -42,7 +42,7 @@ async function getShows(type: string, page: number) {
   };
 }
 
-async function discoverShow(filters: IDiscoverMovies) {
+async function discoverShow(filters: IDiscoverMovies): Promise<IPaginatedResponse<IMovie>> {
   const {
     year,
     type,
@@ -88,6 +88,23 @@ async function discoverShow(filters: IDiscoverMovies) {
   };
 }
 
+async function searchShow(search: string, page: number): Promise<IPaginatedResponse<IMovie>> {
+  const { data } = await tmdb.get('search/movie', {
+    params: {
+      query: search,
+      page
+    }
+  });
+  const shows = data.results.map(parseShow);
+
+  return {
+    totalPages: data.total_pages,
+    totalResults: data.total_results,
+    page: data.page,
+    items: shows
+  };
+}
+
 async function getShowGenres() {
   const { data } = await tmdb.get('/genre/tv/list');
   return (data.genres as IGenre[]).map((genre) => ({
@@ -99,5 +116,6 @@ async function getShowGenres() {
 export {
   discoverShow,
   getShows,
+  searchShow,
   getShowGenres
 };
