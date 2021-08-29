@@ -52,7 +52,7 @@ function MovieList() {
   }, [location.pathname, type, genre, year, rating, search]);
 
   function getGenre(genre: number | undefined) {
-    if (genre != undefined) {
+    if (genre !== undefined) {
       let value;
       if (type === 'movie') {
         value = movieGenres.find((mGenre) => mGenre.value === genre);
