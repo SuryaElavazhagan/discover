@@ -108,7 +108,7 @@ function MovieList() {
         <div className="w-full h-full flex flex-col items-center justify-center text-white">
           { error }
           <button
-            className="px-8 py4 rounded-xl bg-white"
+            className="px-8 py4 rounded-xl bg-white text-gray-900"
             onClick={fetchMovies}
           >
             Retry
