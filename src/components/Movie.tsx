@@ -5,6 +5,15 @@ interface IMovieProps {
   genre: string;
 }
 
+/**
+ * Usage:
+ * 
+ * <Movie
+ *  movie={movie}
+ *  genre={genre}
+ * />
+ */
+
 function Movie({ movie, genre }: IMovieProps) {
   return (
     <div className="flex flex-col items-center">

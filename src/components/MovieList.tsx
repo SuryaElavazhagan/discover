@@ -12,6 +12,16 @@ import { IRootState } from "../store";
 import { discoverShow, getShows } from "../api/shows";
 import { isDefaultValue } from "../constants/filters";
 
+/**
+ * My actual plan was to make this a reuseable component,
+ * but just to use redux - so that this app uses all basic
+ * react libraries (react, router, redux).
+ * 
+ * All the items referred from store can be converted to
+ * props i.e., type, genre, year, rating, movieGenres,
+ * tvGenres
+ */
+
 function MovieList() {
   const location = useLocation();
   const type = useSelector((state: IRootState) => state.filter.type);
